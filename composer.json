@@ -1,0 +1,32 @@
+{
+  "name": "okcoder/think-filesystem",
+  "description": "thinkphp 文件管理",
+  "type": "library",
+  "authors": [
+    {
+      "name": "OkCoder",
+      "email": "1046512080@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "okcoder\\think\\filesystem\\": "src/"
+    }
+  },
+  "extra": {
+    "think": {
+      "services": [
+        "okcoder\\think\\filesystem\\Service"
+      ]
+    }
+  },
+  "require": {
+    "ext-json": "*",
+    "topthink/framework": "^6.0",
+    "liz/flysystem-qiniu": "^1.23",
+    "okcoder/think-helper": "^1.0.0",
+    "ext-mbstring": "*",
+    "topthink/think-migration": "^3.0.3",
+    "topthink/think-queue": "^3.0.7"
+  }
+}
