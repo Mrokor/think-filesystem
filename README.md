@@ -56,12 +56,12 @@ return [
 
 ##### 获取上传凭证
 
-> GET /file/file/qiniu/get_config?type=&effect=
+> GET /okcoder/filesystem/qiniu/get_config?type=&effect=
 
 ##### [配置]上传回调(可忽略)
 
-> POST /file/file/qiniu/post_callback
+> POST /okcoder/filesystem/qiniu/post_callback
 
 ##### [配置]转码回调(可忽略)
 
-> POST /file/file/qiniu/post_transcoding_url
+> POST /okcoder/filesystem/qiniu/post_transcoding_url
