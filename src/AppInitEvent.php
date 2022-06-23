@@ -12,9 +12,13 @@ class AppInitEvent
         self::registerRoute();
     }
 
+    /**
+     *  注册路由
+     */
     private static function registerRoute()
     {
-        Route::group("okcoder/filesystem", function () {
+        $route_prefix = config("filesystem.route_prefix") ?: 'okcoder/filesystem';
+        Route::group($route_prefix, function () {
             Route::group("qiniu", function () {
                 // 获取上传凭证
                 Route::get("get_config", "\\okcoder\\think\\filesystem\\controller\\QiniuController@getConfig");

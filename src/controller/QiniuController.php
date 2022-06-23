@@ -22,9 +22,9 @@ class QiniuController
      */
     public function getConfig(): Response
     {
-        $type = input('type', 0, 'intval');
+        $type   = input('type', 0, 'intval');
         $effect = input('effect', '', 'trim');
-        $data = QiniuLogic::getConfig($type, $effect);
+        $data   = QiniuLogic::getConfig($type, $effect);
         return apiReturn($data);
     }
 
@@ -36,13 +36,14 @@ class QiniuController
 
         Log::write(input(), 'think-filesystem');
         try {
-            $input['type'] = input('post.type', 0, 'intval');
+            $input['type']    = input('post.type', 0, 'intval');
             $input['channel'] = input('post.channel', 0, 'intval');
-            $input['url'] = $input['original_url'] = input('post.key', '', 'trim');
-            $input['width'] = input('post.width', 0, 'intval');
-            $input['height'] = input('post.height', 0, 'intval');
-            $input['size'] = input('post.size', 0, 'intval');
-            $codec_name = input('post.codec_name', '', 'trim');
+            $input['url']     = $input['original_url'] = input('post.key', '', 'trim');
+            $input['width']   = input('post.width', 0, 'intval');
+            $input['height']  = input('post.height', 0, 'intval');
+            $input['size']    = input('post.size', 0, 'intval');
+            $input['ext']     = input('post.ext', '', 'trim');
+            $codec_name       = input('post.codec_name', '', 'trim');
             if (in_array($input['type'], [FileEnum::ENUM_TYPE_AUDIO, FileEnum::ENUM_TYPE_VIDEO])) {
                 $input['duration'] = input('post.duration', 0);
             }
@@ -52,11 +53,12 @@ class QiniuController
             $fileModel = FileModel::create($input);
 
             if ($input['type'] == FileEnum::ENUM_TYPE_IMAGE) {
-                if ($input['size'] > 50 * 1024) {
+                if ($input['size'] > 30 * 1024) {
                     FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_IMAGE_PREVIEW, 'file_id' => $fileModel->id]);
                 }
             } elseif ($input['type'] == FileEnum::ENUM_TYPE_VIDEO) {
-                if (QiniuLogic::isH265ByStr($codec_name)) {
+                $_265To264 = config('filesystem.265To264') ?? false;
+                if ($_265To264 && QiniuLogic::isH265ByStr($codec_name)) {
                     if ($input['size'] > 5 * 1024 * 1024) {
                         FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_265_TO_264_PREVIEW_WATER, 'file_id' => $fileModel->id]);
                     } else {
@@ -66,7 +68,8 @@ class QiniuController
                     if ($input['size'] > 5 * 1024 * 1024) {
                         FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_PREVIEW_WATER, 'file_id' => $fileModel->id]);
                     } else {
-                        FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_WATER, 'file_id' => $fileModel->id]);
+                        $imageWater = config('filesystem.disks.qiniu.videoWater') ?? null;
+                        if ($imageWater) FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_WATER, 'file_id' => $fileModel->id]);
                     }
                 }
             }
@@ -82,7 +85,7 @@ class QiniuController
      */
     public function postTranscodingUrl()
     {
-        $data = request()->post();
+        $data                 = request()->post();
         $fileTranscodingModel = FileTranscodingModel::where(['transcoding_id' => $data['id'] ?? 0])->order('id desc')->find();
         if (!$fileTranscodingModel) {
             Log::write($data, 'transcodingUrl');
@@ -90,15 +93,15 @@ class QiniuController
         }
         if ($data['code'] != '0' || $data['items'][0]['code'] != '0') {
             Log::write($data, 'transcodingUrl_状态码错误');
-            $fileTranscodingModel->state = FileTranscodingEnum::ENUM_STATE_FAIL;
+            $fileTranscodingModel->state         = FileTranscodingEnum::ENUM_STATE_FAIL;
             $fileTranscodingModel->handle_result = $data;
             $fileTranscodingModel->save();
             exit();
         }
         $item = $data['items'][0];
 
-        $fileTranscodingModel->state = FileTranscodingEnum::ENUM_STATE_SUCCESS;
-        $fileTranscodingModel->url = $item['key'];
+        $fileTranscodingModel->state         = FileTranscodingEnum::ENUM_STATE_SUCCESS;
+        $fileTranscodingModel->url           = $item['key'];
         $fileTranscodingModel->handle_result = $data;
         $fileTranscodingModel->save();
 
@@ -106,7 +109,7 @@ class QiniuController
             default:
                 break;
             case FileTranscodingEnum::ENUM_IMAGE_PREVIEW_COVER:
-                $fileModel = FileModel::find($fileTranscodingModel->file_id);
+                $fileModel      = FileModel::find($fileTranscodingModel->file_id);
                 $fileModel->url = $item['key'];
                 $fileModel->save();
                 // 删除原图
@@ -116,7 +119,7 @@ class QiniuController
             case FileTranscodingEnum::ENUM_VIDEO_WATER:
             case FileTranscodingEnum::ENUM_VIDEO_PREVIEW_WATER:
                 // 保留原文件
-                $fileModel = FileModel::find($fileTranscodingModel->file_id);
+                $fileModel      = FileModel::find($fileTranscodingModel->file_id);
                 $fileModel->url = $item['key'];
                 $fileModel->save();
                 break;
@@ -126,9 +129,10 @@ class QiniuController
                 QiniuLogic::deleteOriginalUrl($fileModel);
 
                 $fileModel->original_url = $item['key'];
-                $fileModel->url = $item['key'];
+                $fileModel->url          = $item['key'];
                 $fileModel->save();
-                FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_WATER, 'file_id' => $fileModel->id]);
+                $imageWater = config('filesystem.disks.qiniu.videoWater') ?? null;
+                if ($imageWater) FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_WATER, 'file_id' => $fileModel->id]);
                 break;
             case FileTranscodingEnum::ENUM_VIDEO_265_TO_264_PREVIEW_WATER:
                 $fileModel = FileModel::find($fileTranscodingModel->file_id);
@@ -136,7 +140,7 @@ class QiniuController
                 QiniuLogic::deleteOriginalUrl($fileModel);
 
                 $fileModel->original_url = $item['key'];
-                $fileModel->url = $item['key'];
+                $fileModel->url          = $item['key'];
                 $fileModel->save();
                 FileTranscodingModel::create(['type' => FileTranscodingEnum::ENUM_VIDEO_PREVIEW_WATER, 'file_id' => $fileModel->id]);
                 break;

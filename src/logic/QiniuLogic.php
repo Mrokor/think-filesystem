@@ -26,7 +26,7 @@ class QiniuLogic extends BaseLogic
             'forceSaveKey'     => true, // 忽略客户端指定的key，强制使用saveKey进行文件命名
             'saveKey'          => $saveKey,
             'callbackUrl'      => request()->domain() . '/index.php/okcoder/filesystem/qiniu/post_callback',
-            'callbackBody'     => json_encode($returnBodyCommon,JSON_UNESCAPED_UNICODE),
+            'callbackBody'     => json_encode($returnBodyCommon, JSON_UNESCAPED_UNICODE),
             'callbackBodyType' => 'application/json'
         ];
         $expire_in        = 3600;
@@ -46,7 +46,8 @@ class QiniuLogic extends BaseLogic
             "key"     => "$(key)",
             "channel" => FileEnum::ENUM_CHANNEL_QI_NIU,
             "effect"  => $effect,
-            "type"    => $type
+            "type"    => $type,
+            "ext"     => "$(ext)"
         ];
         if ($type === FileEnum::ENUM_TYPE_IMAGE) {
             $returnBodyCommon['width']  = "$(imageInfo.width)";
