@@ -21,7 +21,7 @@
     }
   },
   "require": {
-    "php": ">=8",
+    "php": ">=7.1.0",
     "ext-json": "*",
     "topthink/framework": "^6.0",
     "liz/flysystem-qiniu": "^1.23",
