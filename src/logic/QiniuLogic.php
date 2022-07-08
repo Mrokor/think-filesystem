@@ -21,6 +21,7 @@ class QiniuLogic extends BaseLogic
     {
         $auth             = \app('filesystem')->disk('qiniu')->getAdapter();
         $saveKey          = $type . '/${mon}${day}${hour}${min}${sec}/${etag}${ext}';
+        if ($effect) $saveKey = $effect . '/' . $saveKey;
         $returnBodyCommon = self::getReturnBody($type, $effect);
         $policy           = [
             'forceSaveKey'     => true, // 忽略客户端指定的key，强制使用saveKey进行文件命名
