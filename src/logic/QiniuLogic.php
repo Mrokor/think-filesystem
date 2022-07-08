@@ -23,10 +23,11 @@ class QiniuLogic extends BaseLogic
         $saveKey          = $type . '/${mon}${day}${hour}${min}${sec}/${etag}${ext}';
         if ($effect) $saveKey = $effect . '/' . $saveKey;
         $returnBodyCommon = self::getReturnBody($type, $effect);
+        $route_prefix = config("filesystem.route_prefix") ?: 'okcoder/filesystem';
         $policy           = [
             'forceSaveKey'     => true, // 忽略客户端指定的key，强制使用saveKey进行文件命名
             'saveKey'          => $saveKey,
-            'callbackUrl'      => request()->domain() . '/index.php/okcoder/filesystem/qiniu/post_callback',
+            'callbackUrl'      => request()->domain() . '/index.php/'.$route_prefix.'/qiniu/post_callback',
             'callbackBody'     => json_encode($returnBodyCommon, JSON_UNESCAPED_UNICODE),
             'callbackBodyType' => 'application/json'
         ];

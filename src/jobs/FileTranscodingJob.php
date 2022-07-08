@@ -50,7 +50,8 @@ class FileTranscodingJob
         $fopManager = new PersistentFop($auth->getAuth());
 
         $key       = BaseLogic::getKeyByUrl($fileModel->original_url);
-        $notifyUrl = 'https://' . config('app.app_host') . "/index.php/okcoder/filesystem/qiniu/post_transcoding_url";
+        $route_prefix     = config("filesystem.route_prefix") ?: 'okcoder/filesystem';
+        $notifyUrl = 'https://' . config('app.app_host') . "/index.php/".$route_prefix."/qiniu/post_transcoding_url";
         $pipeline  = null;
 
         switch ($fileTranscodingModel->type) {
