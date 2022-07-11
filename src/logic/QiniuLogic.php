@@ -14,10 +14,10 @@ class QiniuLogic extends BaseLogic
     /**
      * 获取上传凭证
      * @param int $type 文件类型
-     * @param null $effect 文件作用标记
+     * @param int $effect 文件作用标记
      * @return array
      */
-    public static function getConfig(int $type, $effect = null): array
+    public static function getConfig(int $type, int $effect = 0): array
     {
         $auth             = \app('filesystem')->disk('qiniu')->getAdapter();
         $saveKey          = $type . '/${mon}${day}${hour}${min}${sec}/${etag}${ext}';
@@ -39,10 +39,10 @@ class QiniuLogic extends BaseLogic
     /**
      * 定义回调字段格式
      * @param int $type
-     * @param string $effect
+     * @param int $effect
      * @return array
      */
-    public static function getReturnBody(int $type, string $effect): array
+    public static function getReturnBody(int $type, int $effect = 0): array
     {
         $returnBodyCommon = [
             "key"     => "$(key)",

@@ -23,7 +23,7 @@ class QiniuController
     public function getConfig(): Response
     {
         $type   = input('type', 0, 'intval');
-        $effect = input('effect', '', 'trim');
+        $effect = input('effect', 0, 'intval');
         $data   = QiniuLogic::getConfig($type, $effect);
         return apiReturn($data);
     }
@@ -37,6 +37,7 @@ class QiniuController
         Log::write(input(), 'think-filesystem');
         try {
             $input['type']    = input('post.type', 0, 'intval');
+            $input['effect']  = input('post.effect', 0, 'intval');
             $input['channel'] = input('post.channel', 0, 'intval');
             $input['url']     = $input['original_url'] = input('post.key', '', 'trim');
             $input['width']   = input('post.width', 0, 'intval');

@@ -28,6 +28,8 @@ class File extends Migrator
                 ->addColumn(Column::smallInteger('height')->setSigned(false)->setDefault(0)->setNull(false)->setComment('图片高度'))
                 ->addColumn(Column::boolean('url_allow_delete')->setSigned(true)->setDefault(0)->setComment('预览文件是否允许删除'))
                 ->addColumn(Column::boolean('original_url_allow_delete')->setSigned(true)->setDefault(0)->setComment('原文件是否允许删除'))
+                ->addColumn(Column::smallInteger('effect')->setSigned(false)->setDefault(0)->setNull(false)->setComment('作用'))
+                ->addColumn(Column::string('ext')->setLimit(10)->setDefault('')->setNull(false)->setComment('文件名后缀'))
                 ->addTimestamps()
                 ->addColumn(Column::timestamp('delete_time')->setNull(true)->setDefault(null)->setComment('删除时间'))
                 ->addIndex(['channel'])
