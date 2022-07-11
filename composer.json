@@ -11,7 +11,10 @@
   "autoload": {
     "psr-4": {
       "okcoder\\think\\filesystem\\": "src/"
-    }
+    },
+    "files": [
+      "src/helper.php"
+    ]
   },
   "extra": {
     "think": {

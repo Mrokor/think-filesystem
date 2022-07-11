@@ -8,6 +8,8 @@ use okcoder\think\filesystem\enum\FileEnum;
 use okcoder\think\filesystem\model\FileModel;
 use Qiniu\Storage\BucketManager;
 use think\facade\Log;
+use think\facade\Request;
+use function app;
 
 class QiniuLogic extends BaseLogic
 {
@@ -19,21 +21,26 @@ class QiniuLogic extends BaseLogic
      */
     public static function getConfig(int $type, int $effect = 0): array
     {
-        $auth             = \app('filesystem')->disk('qiniu')->getAdapter();
-        $saveKey          = $type . '/${mon}${day}${hour}${min}${sec}/${etag}${ext}';
+        $auth    = app('filesystem')->disk('qiniu')->getAdapter();
+        $saveKey = $type . '/${mon}${day}${hour}${min}${sec}/${etag}${ext}';
         if ($effect) $saveKey = $effect . '/' . $saveKey;
         $returnBodyCommon = self::getReturnBody($type, $effect);
-        $route_prefix = config("filesystem.route_prefix") ?: 'okcoder/filesystem';
+        $route_prefix     = config("filesystem.route_prefix") ?: 'okcoder/filesystem';
         $policy           = [
             'forceSaveKey'     => true, // 忽略客户端指定的key，强制使用saveKey进行文件命名
             'saveKey'          => $saveKey,
-            'callbackUrl'      => request()->domain() . '/index.php/'.$route_prefix.'/qiniu/post_callback',
+            'callbackUrl'      => Request::domain() . '/index.php/' . $route_prefix . '/qiniu/post_callback',
             'callbackBody'     => json_encode($returnBodyCommon, JSON_UNESCAPED_UNICODE),
             'callbackBodyType' => 'application/json'
         ];
         $expire_in        = 3600;
         $token            = $auth->getUploadToken(null, $expire_in, $policy);
-        return ['token' => $token, 'type' => $type, 'channel' => FileEnum::ENUM_CHANNEL_QI_NIU, 'expire_in' => $expire_in];
+        return [
+            'token'     => $token,
+            'type'      => $type,
+            'channel'   => FileEnum::ENUM_CHANNEL_QI_NIU,
+            'expire_in' => $expire_in
+        ];
     }
 
     /**
