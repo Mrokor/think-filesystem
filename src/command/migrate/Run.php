@@ -1,8 +1,8 @@
 <?php
 
-namespace Mrokor\EasyIm\command\migrate;
+namespace okcoder\think\filesystem\command\migrate;
 
-use Mrokor\EasyIm\command\Migrate;
+use okcoder\think\filesystem\command\Migrate;
 use Phinx\Migration\MigrationInterface;
 use think\console\Input;
 use think\console\input\Option as InputOption;
@@ -16,7 +16,7 @@ class Run extends Migrate
     protected function configure()
     {
         $this->setName('filesystem:table')
-            ->setDescription('Migrate the filesystem database')
+            ->setDescription('创建文件管理器数据库表')
             ->addOption('--target', '-t', InputOption::VALUE_REQUIRED, 'The version number to migrate to')
             ->addOption('--date', '-d', InputOption::VALUE_REQUIRED, 'The date to migrate to')
             ->setHelp(<<<EOT
