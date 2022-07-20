@@ -40,11 +40,15 @@ return [
                 'imageZip'          =>  null,   // 图片瘦身
             ]
         ],
-    ]
+    ],
+     // 路由前缀
+    'route_prefix' => 'okcoder/filesystem',
+    // 是否开启265视频转码成264视频
+    '265To264'     => true
 ];
 ```
 
-> 开启转码需要配置app.app_host网站域名,支持https:   www.baidu.com
+> 开启转码需要配置app.app_host网站域名
 > 转码队列
 ```
     php think listen:queue --queue FileTranscodingJob

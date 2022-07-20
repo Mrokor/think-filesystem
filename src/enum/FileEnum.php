@@ -9,10 +9,10 @@ class FileEnum
     /**
      * 渠道
      */
-    const ENUM_CHANNEL_LOCAL   = 1;  // 本地
-    const ENUM_CHANNEL_NORMAL  = 1;  // 外网url
-    const ENUM_CHANNEL_QI_NIU  = 2;  // 七牛云
-    const ENUM_CHANNEL_ALI_YUN = 3;  // 阿里云
+    const ENUM_CHANNEL_LOCAL   = 0;  // 本地
+    const ENUM_CHANNEL_QI_NIU  = 1;  // 七牛云
+    const ENUM_CHANNEL_ALI_YUN = 2;  // 阿里云
+    const ENUM_CHANNEL_NORMAL  = 3;  // 外网url
 
 
     /**
